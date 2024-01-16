@@ -1,0 +1,136 @@
+---
+title: "Actividad Evaluable 2: Data Driven Security – CyberSecurity Management"
+author: "Tu Nombre y el de tu compañero/a"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    keep_md: true
+  pdf_document: default
+---
+
+# Introducción
+
+Breve descripción de la actividad y los objetivos a alcanzar.
+
+# Pregunta 1: Datos Elegantes + Análisis de Datos con Web Scrapping
+
+## 1. Descargar y almacenar la página web
+
+```{r}
+# Cargar las librerías necesarias
+library(httr)
+library(XML)
+
+# Definir la URL de la página a descargar
+url <- "https://www.mediawiki.org/wiki/MediaWiki"
+
+# Utilizar la función GET() para descargar el contenido de la página
+pagina_web <- GET(url)
+
+# Verificar que la descarga fue exitosa
+if (status_code(pagina_web) == 200) {
+  # Convertir el contenido de la página a un formato que pueda ser tratado en R
+  contenido_html <- content(pagina_web, as = "text")
+  # Parsear el contenido HTML a XML para facilitar su análisis
+  contenido_xml <- htmlParse(contenido_html, asText = TRUE)
+  # Guardar el contenido XML en un archivo .xml
+  saveXML(contenido_xml, file = "pagina_web.xml")
+} else {
+  stop("La página web no pudo ser descargada correctamente.")
+}
+```
+
+## 2. Analizar el título de la página
+
+```{r}
+# Asegúrate de que las librerías necesarias estén cargadas
+library(XML)
+
+# Utilizar XPath para encontrar el título de la página
+titulo <- xpathSApply(contenido_xml, "//title", xmlValue)
+
+# Imprimir el título para verificar que se ha extraído correctamente
+print(titulo)
+```
+
+## 3. Buscar todos los enlaces
+
+```{r}
+# Código para extraer todos los enlaces y sus textos
+```
+
+## 4. Generar tabla de enlaces
+
+```{r}
+# Código para generar la tabla con los enlaces y su frecuencia
+```
+
+## 5. Verificar si los enlaces están activos
+
+```{r}
+# Código para verificar el estado de cada enlace
+```
+
+# Pregunta 2: Infografía con gráficos
+
+## Histograma de frecuencia de enlaces
+
+```{r}
+# Código para crear un histograma
+```
+
+## Gráfico de barras de enlaces a otros dominios
+
+```{r}
+# Código para crear un gráfico de barras
+```
+
+## Gráfico de tarta de Status HTTP
+
+```{r}
+# Código para crear un gráfico de tarta
+```
+
+# Pregunta 3: Análisis de logs de servidor usando R (parte II)
+
+## Obtención y carga de los Datos
+
+```{r}
+# Código para descomprimir y cargar los datos del servidor
+```
+
+## Limpieza de los Datos
+
+```{r}
+# Código para limpiar y preparar los datos
+```
+
+## Exploración de Datos
+
+```{r}
+# Código para explorar los datos y obtener estadísticas
+```
+
+## Análisis de Datos
+
+```{r}
+# Código para analizar los tipos de peticiones HTTP
+```
+
+## Visualización de Resultados
+
+```{r}
+# Código para generar gráficos de visualización
+```
+
+## Clústering de datos
+
+```{r}
+# Código para realizar el análisis de clústering con k-means
+```
+
+## Representación visual de clústering
+
+```{r}
+# Código para representar visualmente los clústeres
+```
