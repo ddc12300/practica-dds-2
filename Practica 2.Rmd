@@ -56,7 +56,26 @@ print(titulo)
 ## 3. Buscar todos los enlaces
 
 ```{r}
-# Código para extraer todos los enlaces y sus textos
+# Asegúrate de que las librerías necesarias estén cargadas
+library(XML)
+
+# Leer el contenido XML desde el archivo si no está ya cargado en la sesión
+# contenido_xml <- readRDS(file = "pagina_web.rds")
+
+# Utilizar xpathSApply para extraer todos los atributos 'href' de los enlaces
+links_url <- xpathSApply(contenido_xml, "//a", xmlGetAttr, "href")
+
+# Utilizar xpathSApply para extraer todo el texto de los enlaces
+links_text <- xpathSApply(contenido_xml, "//a", xmlValue)
+
+# Crear un data frame con los textos y URLs de los enlaces
+df_enlaces <- data.frame(Texto = links_text, URL = links_url, stringsAsFactors = FALSE)
+
+# Reemplazar los valores NULL por NA en el data frame
+df_enlaces[is.na(df_enlaces)] <- NA
+
+# Imprimir los primeros enlaces para verificar
+View(df_enlaces)
 ```
 
 ## 4. Generar tabla de enlaces
