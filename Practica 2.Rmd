@@ -93,25 +93,19 @@ View(df_enlaces)
 ## 4. Generar tabla de enlaces
 
 ```{r}
-# Asumiendo que ya tienes el data frame df_enlaces con las columnas Texto y URL
 
-# Crear una tabla de recuento para cada URL
-recuento_urls <- table(df_enlaces$URL)
+# Limpiar los espacios en blanco al principio y al final del texto de los enlaces
+df_enlaces$Texto <- sapply(df_enlaces$Texto, trimws)
 
-# Convertir la tabla en un data frame
-df_recuento_urls <- as.data.frame(recuento_urls)
+# Rellenamos valores na con NA texto
+df_enlaces$Texto[is.na(df_enlaces$Texto)] <- 'NA'
+df_enlaces$URL[is.na(df_enlaces$URL)] <- 'NA'
 
-# Renombrar las columnas para mayor claridad
-colnames(df_recuento_urls) <- c("URL", "Frecuencia")
+# Agrupar por Texto y URL y contar las ocurrencias
+df_enlaces_con_frecuencia <- aggregate(cbind(Frecuencia = df_enlaces$URL) ~ Texto + URL, data = df_enlaces, FUN = length)
 
-# Unir el data frame de recuento con el data frame original para incluir el texto del enlace
-df_enlaces_con_frecuencia <- merge(df_enlaces, df_recuento_urls, by = "URL")
-
-# Eliminar duplicados manteniendo la primera ocurrencia
-df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[!duplicated(df_enlaces_con_frecuencia$URL), ]
-
-# Ordenar el data frame por URL para mejor visualización
-df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[order(df_enlaces_con_frecuencia$Frecuencia, decreasing = TRUE), ]
+# Ordenar el data frame por Frecuencia de mayor a menor para mejor visualización
+df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[order(-df_enlaces_con_frecuencia$Frecuencia), ]
 
 # Imprimir la tabla para verificar
 View(df_enlaces_con_frecuencia)
@@ -120,7 +114,57 @@ View(df_enlaces_con_frecuencia)
 ## 5. Verificar si los enlaces están activos
 
 ```{r}
-# Código para verificar el estado de cada enlace
+# Asegúrate de que la librería httr esté cargada
+library(httr)
+
+# Asumiendo que ya tienes el data frame df_enlaces con las columnas Texto y URL
+# Definir el dominio base para construir las URLs absolutas
+base_url <- "https://www.mediawiki.org"
+
+# Crear un nuevo data frame para almacenar los resultados, si no existe
+if (!exists("df_enlaces_estado")) {
+  df_enlaces_estado <- df_enlaces
+  df_enlaces_estado$status_code <- NA  # Inicializar la columna de códigos de estado
+}
+
+# Iterar sobre cada enlace y verificar el estado si no se ha verificado previamente
+for (i in seq_len(nrow(df_enlaces_estado))) {
+  # Si ya se verificó el estado de este enlace, saltar a la siguiente iteración
+  if (!is.na(df_enlaces_estado$status_code[i])) {
+    next
+  }
+  
+  # Extraer la URL actual
+  url <- df_enlaces_estado$URL[i]
+  
+  # Verificar si la URL es relativa y convertirla a absoluta si es necesario
+  if (startsWith(url, "//")) {
+    url <- paste0("https:", url)
+  } else if (startsWith(url, "/")) {
+    url <- paste0(base_url, url)
+  } else if (startsWith(url, "#")) {
+    url <- base_url # URL interna con ancla
+  }
+  
+  # Realizar una petición HEAD para obtener el código de estado
+  response <- tryCatch({
+    HEAD(url)
+  }, error = function(e) {
+    list(status_code = NA) # En caso de error, asignar NA
+  })
+  
+  # Almacenar el código de estado en el nuevo data frame
+  df_enlaces_estado$status_code[i] <- response$status_code
+  
+  # Imprimir el índice del enlace y el código de estado para seguimiento
+  cat("Enlace", i, "de", nrow(df_enlaces_estado), "-", url, "Estado:", df_enlaces_estado$status_code[i], "\n")
+  
+  # Pausar brevemente para evitar ser bloqueado por el servidor
+  Sys.sleep(3)
+}
+
+# Imprimir los resultados para verificar
+View(df_enlaces_estado)
 ```
 
 # Pregunta 2: Infografía con gráficos
@@ -128,19 +172,104 @@ View(df_enlaces_con_frecuencia)
 ## Histograma de frecuencia de enlaces
 
 ```{r}
-# Código para crear un histograma
+# Asumiendo que df_enlaces_estado contiene la columna URL y status_code
+library(ggplot2)
+
+# Agregar una nueva columna que clasifique cada URL como absoluta o relativa
+df_enlaces_estado$TipoURL <- ifelse(grepl("^http", df_enlaces_estado$URL), "Absoluta", "Relativa")
+
+# Crear un gráfico de barras con ggplot2
+grafico_barras_urls <- ggplot(df_enlaces_estado, aes(x = TipoURL, fill = TipoURL)) +
+  geom_bar() + # Usar geom_bar para gráfico de barras
+  geom_text(aes(label=after_stat(count)), stat='count', vjust=-0.5) + # Añadir el valor encima de las barras
+  labs(title = "Frecuencia de URLs Absolutas y Relativas",
+       x = "Tipo de URL",
+       y = "Frecuencia") +
+  scale_fill_manual(values = c("Absoluta" = "blue", "Relativa" = "red"))
+
+# Mostrar el gráfico de barras
+print(grafico_barras_urls)
 ```
 
 ## Gráfico de barras de enlaces a otros dominios
 
 ```{r}
-# Código para crear un gráfico de barras
+# Asumiendo que df_enlaces_estado contiene la columna URL
+# Definir el dominio base para la comparación
+dominio_base <- "https://www.mediawiki.org"
+
+# Función para determinar si la URL apunta al dominio base o a otro dominio
+es_dominio_base <- function(url) {
+  # Comprobar si la URL es relativa
+  if (startsWith(url, "/")) {
+    return(TRUE)
+  }
+  # Comprobar si la URL es absoluta y pertenece al dominio base
+  dominio <- sub("^(https?://[^/]+).*", "\\1", url)
+  return(dominio == dominio_base)
+}
+
+# Aplicar la función a cada URL para clasificar los enlaces
+df_enlaces_estado$Destino <- sapply(df_enlaces_estado$URL, es_dominio_base)
+
+# Convertir los resultados booleanos a factores con etiquetas "Mediawiki" y "Otro Dominio"
+df_enlaces_estado$Destino <- ifelse(df_enlaces_estado$Destino, "Mediawiki", "Otro Dominio")
+
+# Contar la cantidad de enlaces que apuntan a cada destino
+conteo_destinos <- table(df_enlaces_estado$Destino)
+
+# Crear un data frame a partir del conteo para el gráfico
+df_conteo_destinos <- as.data.frame(conteo_destinos)
+
+# Crear un gráfico de barras con ggplot2
+grafico_barras_destinos <- ggplot(df_conteo_destinos, aes(x = Var1, y = Freq, fill = Var1)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Freq), vjust = -0.5) +
+  labs(title = "Suma de Enlaces por Destino",
+       x = "Destino",
+       y = "Cantidad de Enlaces") +
+  scale_fill_manual(values = c("Mediawiki" = "green", "Otro Dominio" = "orange"))
+
+# Mostrar el gráfico de barras
+print(grafico_barras_destinos)
 ```
 
 ## Gráfico de tarta de Status HTTP
 
 ```{r}
-# Código para crear un gráfico de tarta
+# Asegúrate de que la librería ggplot2 esté cargada
+library(ggplot2)
+
+# Contar la frecuencia de cada código de estado
+conteo_status <- table(df_enlaces_estado$status_code)
+
+# Crear un data frame a partir del conteo para el gráfico
+df_conteo_status <- as.data.frame(conteo_status)
+
+# Renombrar las columnas para que sean más descriptivas
+names(df_conteo_status) <- c("status_code", "count")
+
+# Crear un gráfico de tarta con ggplot2
+grafico_tarta_status <- ggplot(df_conteo_status, aes(x = "", y = count, fill = factor(status_code))) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.title = element_blank()) +
+  labs(title = "Distribución de Códigos de Estado HTTP", # Añadir título aquí
+       fill = "Status Code") +
+  geom_text(aes(label = paste0(round(count / sum(count) * 100, 1), "%")), 
+            position = position_stack(vjust = 0.5))
+
+# Mostrar el gráfico de tarta
+print(grafico_tarta_status)
+```
+
+```{r}
+# Cargar la librería necesaria para organizar los gráficos
+library(gridExtra)
+
+# Combinar los gráficos en una sola figura
+grid.arrange(grafico_barras_urls, grafico_barras_destinos, grafico_tarta_status, ncol = 2)
 ```
 
 # Pregunta 3: Análisis de logs de servidor usando R (parte II)
