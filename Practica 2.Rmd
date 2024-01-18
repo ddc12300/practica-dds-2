@@ -276,20 +276,47 @@ grid.arrange(grafico_barras_urls, grafico_barras_destinos, grafico_tarta_status,
 
 ## Obtención y carga de los Datos
 
-```{r}
-# Código para descomprimir y cargar los datos del servidor
+
+```{r dataset}
+library(readr)
+data <- read_table("epa-http.csv", col_names = FALSE)
+colnames(data) <- c("IP", "Timestamp", "Tipo", "URL", "Protocolo", "Respuesta", "Bytes")
+View(data)
 ```
 
 ## Limpieza de los Datos
 
 ```{r}
 # Código para limpiar y preparar los datos
+
+data$IP <- trimws(data$IP)
+data$Timestamp <- sub("^\\[", '', data$Timestamp)
+data$Timestamp <- sub("\\]$", '', data$Timestamp)
+data$Timestamp <- as.POSIXct(data$Timestamp, format = "%d:%H:%M:%S")
+data$Tipo <- sub('"', '', data$Tipo)
+data$URL <- trimws(data$URL)
+data$Protocolo <- sub('"', '', data$Protocolo)
+data$Respuesta <- as.numeric(data$Respuesta)
+data$Bytes <- as.numeric(data$Bytes)
+
+View(data)
 ```
 
 ## Exploración de Datos
 
 ```{r}
 # Código para explorar los datos y obtener estadísticas
+usuarios_unicos <- unique(data$IP)
+print(paste("Hay", length(usuarios_unicos), "usuarios unicos"))
+
+usuarios_con_error <- unique(data$IP[data$Respuesta >= 400 & data$Respuesta <= 599])
+print(paste("Número de usuarios únicos con error:", length(usuarios_con_error)))
+
+usuarios_sin_error <- setdiff(usuarios_unicos, usuarios_con_error)
+print(paste("Número de usuarios únicos sin error:", length(usuarios_sin_error)))
+
+codigos_error_unicos <- unique(data$Respuesta[data$Respuesta >= 400 & data$Respuesta <= 599])
+print(paste("Código de error:", codigos_error_unicos) )
 ```
 
 ## Análisis de Datos
