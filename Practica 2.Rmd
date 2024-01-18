@@ -322,7 +322,26 @@ print(paste("Código de error:", codigos_error_unicos) )
 ## Análisis de Datos
 
 ```{r}
+library(stringr)
 # Código para analizar los tipos de peticiones HTTP
+data_freq_respuesta <- as.data.frame(table(data$Respuesta))
+colnames(data_freq_respuesta) <- c("Respuesta" , "Frecuancia")
+View(data_freq_respuesta)
+
+
+# Filtrar datos donde el valor de data$URL termina en ".jpg o .gif"
+datos_gif <- subset(data, str_detect(data$URL, "\\.gif"))
+datos_jpg <- subset(data, str_detect(data$URL, "\\.jpg"))
+
+datos_combinados <- rbind(datos_gif, datos_jpg)
+
+
+# Crear un data frame con la frecuencia de respuestas para los datos filtrados
+data_freq_respuesta_2 <- as.data.frame(table(datos_combinados$Respuesta))
+colnames(data_freq_respuesta_2) <- c("Respuesta", "Frecuencia")
+
+# Ver el data frame resultante
+View(data_freq_respuesta_2)
 ```
 
 ## Visualización de Resultados
