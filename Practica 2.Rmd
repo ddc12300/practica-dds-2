@@ -63,16 +63,28 @@ library(XML)
 # contenido_xml <- readRDS(file = "pagina_web.rds")
 
 # Utilizar xpathSApply para extraer todos los atributos 'href' de los enlaces
-links_url <- xpathSApply(contenido_xml, "//a", xmlGetAttr, "href")
+links_href <- xpathSApply(contenido_xml, "//a", xmlGetAttr, "href")
 
 # Utilizar xpathSApply para extraer todo el texto de los enlaces
 links_text <- xpathSApply(contenido_xml, "//a", xmlValue)
 
-# Crear un data frame con los textos y URLs de los enlaces
-df_enlaces <- data.frame(Texto = links_text, URL = links_url, stringsAsFactors = FALSE)
+# Función para reemplazar NULL o cadenas vacías con "NA"
+replace_with_na <- function(x) {
+  sapply(x, function(item) {
+    if (is.null(item) || trimws(item) == "") {
+      return(NA)
+    } else {
+      return(item)
+    }
+  })
+}
 
-# Reemplazar los valores NULL por NA en el data frame
-df_enlaces[is.na(df_enlaces)] <- NA
+# Reemplazar valores NULL o cadenas vacías en href y texto
+links_href <- replace_with_na(links_href)
+links_text <- replace_with_na(links_text)
+
+# Crear un data frame con los textos y URLs de los enlaces
+df_enlaces <- data.frame(Texto = links_text, URL = links_href, stringsAsFactors = FALSE)
 
 # Imprimir los primeros enlaces para verificar
 View(df_enlaces)
