@@ -93,7 +93,28 @@ View(df_enlaces)
 ## 4. Generar tabla de enlaces
 
 ```{r}
-# Código para generar la tabla con los enlaces y su frecuencia
+# Asumiendo que ya tienes el data frame df_enlaces con las columnas Texto y URL
+
+# Crear una tabla de recuento para cada URL
+recuento_urls <- table(df_enlaces$URL)
+
+# Convertir la tabla en un data frame
+df_recuento_urls <- as.data.frame(recuento_urls)
+
+# Renombrar las columnas para mayor claridad
+colnames(df_recuento_urls) <- c("URL", "Frecuencia")
+
+# Unir el data frame de recuento con el data frame original para incluir el texto del enlace
+df_enlaces_con_frecuencia <- merge(df_enlaces, df_recuento_urls, by = "URL")
+
+# Eliminar duplicados manteniendo la primera ocurrencia
+df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[!duplicated(df_enlaces_con_frecuencia$URL), ]
+
+# Ordenar el data frame por URL para mejor visualización
+df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[order(df_enlaces_con_frecuencia$Frecuencia, decreasing = TRUE), ]
+
+# Imprimir la tabla para verificar
+View(df_enlaces_con_frecuencia)
 ```
 
 ## 5. Verificar si los enlaces están activos
