@@ -398,6 +398,8 @@ colnames(data_freq_tipo_2) <- c("Tipo", "Frecuencia")
 View(data_freq_tipo_2)
 ```
 
+En este apartado, primero hemos realizado la clasificación de la peticiones al servidor en función del tipo de petición que realiza y hemos generado el dataframe "data_freq_tipo". A continuación, observando los datos hemos visto que podiamos encontrar tres tipos de formato de imagen: .gif, .jpg y .xbm, por lo tanto, hemos filtrado solo las URL que acababan con dichos formatos y hemos generado un data frame similar al anterior clasificando las peticiones por tipo.
+
 ## Visualización de Resultados
 
 ## 6. Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados.
