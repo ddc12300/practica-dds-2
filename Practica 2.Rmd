@@ -324,30 +324,73 @@ print(paste("Código de error:", codigos_error_unicos) )
 ```{r}
 library(stringr)
 # Código para analizar los tipos de peticiones HTTP
-data_freq_respuesta <- as.data.frame(table(data$Respuesta))
-colnames(data_freq_respuesta) <- c("Respuesta" , "Frecuancia")
-View(data_freq_respuesta)
+data_freq_tipo <- as.data.frame(table(data$Tipo))
+colnames(data_freq_tipo) <- c("Tipo" , "Frecuencia")
+View(data_freq_tipo)
 
 
-# Filtrar datos donde el valor de data$URL termina en ".jpg o .gif"
+# Filtrar datos donde el valor de data$URL termina en ".jpg o .gif o .xbm"
 datos_gif <- subset(data, str_detect(data$URL, "\\.gif"))
 datos_jpg <- subset(data, str_detect(data$URL, "\\.jpg"))
+datos_xbm <- subset(data, str_detect(data$URL, "\\.xbm"))
 
-datos_combinados <- rbind(datos_gif, datos_jpg)
+datos_combinados <- rbind(datos_gif, datos_jpg, datos_xbm)
 
 
 # Crear un data frame con la frecuencia de respuestas para los datos filtrados
-data_freq_respuesta_2 <- as.data.frame(table(datos_combinados$Respuesta))
-colnames(data_freq_respuesta_2) <- c("Respuesta", "Frecuencia")
+data_freq_tipo_2 <- as.data.frame(table(datos_combinados$Tipo))
+colnames(data_freq_tipo_2) <- c("Tipo", "Frecuencia")
 
 # Ver el data frame resultante
-View(data_freq_respuesta_2)
+View(data_freq_tipo_2)
 ```
 
 ## Visualización de Resultados
 
 ```{r}
-# Código para generar gráficos de visualización
+# Asegúrate de que la librería ggplot2 esté cargada
+library(ggplot2)
+
+
+# Crear un gráfico de tarta con ggplot2
+grafico_tarta_tipo <- ggplot(data_freq_tipo, aes(x = "", y = Frecuencia, fill = factor(Tipo))) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.title = element_blank()) +
+  labs(title = "Distribución de Códigos de Tipo de peticion HTTP", # Añadir título aquí
+       fill = "Status Code") +
+  geom_text(aes(label = paste0(round(Frecuencia / sum(Frecuencia) * 100, 1), "%")), 
+            position = position_stack(vjust = 0.5))
+
+# Mostrar el gráfico de tarta
+print(grafico_tarta_tipo)
+```
+
+```{r}
+# Asegúrate de que la librería ggplot2 esté cargada
+library(ggplot2)
+
+peticiones_total <- sum(data_freq_tipo$Frecuencia)
+
+peticiones_imagen <- sum(data_freq_tipo_2$Frecuencia)
+
+otras_peticiones <- peticiones_total - peticiones_imagen
+
+
+# Datos de ejemplo
+valores <- c(peticiones_imagen, otras_peticiones)
+categorias <- c("Peticiones imagen", "Otras peticiones")
+
+# Calcular porcentajes
+porcentajes <- round(valores / sum(valores) * 100, 1)
+
+# Crear el gráfico circular
+pie(valores, labels = paste(categorias, "\n", porcentajes, "%"), col = c("red", "blue"), main = "Gráfico Circular")
+
+# Agregar leyenda
+legend("topright", legend = categorias, fill = c("red", "blue"))
+
 ```
 
 ## Clústering de datos
