@@ -205,7 +205,6 @@ Esta infografía incluye un histograma de la frecuencia de aparición de los enl
 Para diferenciar entre enlaces internos y externos, añadimos una columna `TipoURL` al data frame `df_enlaces_estado` que clasifica cada URL como "Absoluta" o "Relativa" basándose en si comienza con "http".
 
 ```{r}
-# Asumiendo que df_enlaces_estado contiene la columna URL y status_code
 library(ggplot2)
 
 # Agregar una nueva columna que clasifique cada URL como absoluta o relativa
@@ -231,7 +230,6 @@ Luego, aplicamos esta función a todas las URLs en `df_enlaces_estado` y creamos
 Finalmente, visualizamos este conteo en un gráfico de barras con `ggplot2`, donde las barras se colorean según el destino y se etiquetan con el número total de enlaces para cada categoría, proporcionando una comparación clara entre enlaces internos y externos.
 
 ```{r}
-# Asumiendo que df_enlaces_estado contiene la columna URL
 # Definir el dominio base para la comparación
 dominio_base <- "https://www.mediawiki.org"
 
@@ -437,7 +435,6 @@ A continuación, observando los datos hemos visto que podiamos encontrar tres ti
 Generamos gráficos que permiten visualizar características relevantes de los datos analizados, incluyendo un gráfico de tarta para las peticiones HTTP y un gráfico circular para comparar peticiones de imagen con otras peticiones.
 
 ```{r}
-# Asegúrate de que la librería ggplot2 esté cargada
 library(ggplot2)
 
 
@@ -459,7 +456,6 @@ print(grafico_tarta_tipo)
 En este primer apartado, hemos generado un gráfico tipo tarta que separa las peticiones por tipo de petición mostrando en que porcentaje se usa cada una en el conjunto de datos
 
 ```{r}
-# Asegúrate de que la librería ggplot2 esté cargada
 library(ggplot2)
 
 peticiones_total <- sum(data_freq_tipo$Frecuencia)
@@ -489,7 +485,6 @@ En este segundo apartado hemos mostrado en un gráfico circular el porcentaje de
 ### 7. Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.
 
 ```{r}
-# Asegúrate de que las librerías necesarias estén cargadas
 library(ggplot2)
 library(dplyr)
 library(lubridate)
