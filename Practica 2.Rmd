@@ -422,12 +422,70 @@ ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
 ## Clústering de datos
 
 ```{r}
+library(dplyr)
+library(data.table)
+library(mltools)  # one_hot
+library(readr)
+library(ggplot2)
 
+# Cargar los datos
+epa_http <- read_table("./epa-http.csv", col_names = FALSE, col_types = cols(
+  col_character(),  # IP
+  col_datetime(format = ""),  # TIMESTAMP
+  col_character(),  # Tipo
+  col_character(),  # URL
+  col_character(),  # Protocolo
+  col_skip(),       # Respuesta (omitida si no es relevante para el clústering)
+  col_double()      # Bytes
+), na = c("-", ""))
+
+# Asignar nombres a las columnas
+colnames(epa_http) <- c("IP", "TIMESTAMP", "Tipo", "URL", "Protocolo", "Bytes")
+
+# Limpiar los datos
+epa_http <- epa_http %>%
+  mutate(
+    Tipo = gsub('[\"]', '', Tipo),
+    Protocolo = gsub('[\"]', '', Protocolo),
+    Tipo = as.factor(Tipo),
+    Protocolo = as.factor(Protocolo),
+    Bytes = ifelse(is.na(Bytes), 0, Bytes),  # Reemplazar NA en Bytes con 0
+    resource_length = nchar(URL)
+  )
+
+# Realizar one-hot encoding para las columnas categóricas
+epa_http_one_hot <- one_hot(as.data.table(epa_http), cols = c("Tipo", "Protocolo"), sparsifyNAs = TRUE)
+
+# Descartar columnas no numéricas
+epa_http_one_hot <- epa_http_one_hot %>% select_if(is.numeric)
+
+# Ejecutar k-means para k=2
+set.seed(123)  # Establecer una semilla para reproducibilidad
+results_k2 <- kmeans(epa_http_one_hot, centers = 2)
+
+# Ejecutar k-means para k=3
+results_k3 <- kmeans(epa_http_one_hot, centers = 3)
+
+# Agregar las asignaciones de clúster al conjunto de datos original
+epa_http$cluster_k2 <- results_k2$cluster
+epa_http$cluster_k3 <- results_k3$cluster
+
+# Visualizar los resultados del clústering para k=2
+ggplot(epa_http, aes(x = resource_length, y = Bytes, color = as.factor(cluster_k2))) +
+  geom_point() +
+  labs(title = "Scatter Plot para k=2",
+       x = "Longitud de la URL",
+       y = "Bytes Enviados",
+       color = "Cluster") +
+  theme_minimal()
+
+# Visualizar los resultados del clústering para k=3
+ggplot(epa_http, aes(x = resource_length, y = Bytes, color = as.factor(cluster_k3))) +
+  geom_point() +
+  labs(title = "Scatter Plot para k=3",
+       x = "Longitud de la URL",
+       y = "Bytes Enviados",
+       color = "Cluster") +
+  theme_minimal()
 ```
 
-
-## Representación visual de clústering
-
-```{r}
-# Código para representar visualmente los clústeres
-```
