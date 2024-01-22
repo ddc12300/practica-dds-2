@@ -22,6 +22,8 @@ Queremos programar un programa de tipo web scrapping con el que podamos obtener 
 
 ## 1. Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
 
+Aquí, utilizamos las librerías `httr` y `XML` para descargar el contenido de la página web de MediaWiki y convertirlo en un formato XML que podamos analizar en R. Verificamos que la descarga sea exitosa mediante el código de estado HTTP.
+
 ```{r}
 # Cargar las librerías necesarias
 library(httr)
@@ -48,6 +50,8 @@ if (status_code(pagina_web) == 200) {
 
 ## 2. Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
 
+Mediante el uso de XPath, extraemos el título de la página web y lo imprimimos para confirmar que se ha obtenido correctamente.
+
 ```{r}
 # Cargar librerias
 library(XML)
@@ -60,6 +64,8 @@ print(titulo)
 ```
 
 ## 3. Analizar el contenido de la web, buscando todos los enlaces (que en HTML se etiquetan como “a”), buscando el texto del enlace, así como la URL.
+
+Utilizamos nuevamente XPath para extraer todos los enlaces de la página, incluyendo el texto y la URL de cada uno. Luego, limpiamos y reemplazamos los valores nulos o cadenas vacías con `NA` y creamos un data frame con esta información.
 
 ```{r}
 # Cargar librerias
@@ -98,6 +104,8 @@ View(df_enlaces)
 
 ## 4. Generar una tabla con cada enlace encontrado, indicando el texto que acompaña el enlace, y el número de veces que aparece un enlace con ese mismo objetivo.
 
+Agrupamos los enlaces por texto y URL, contamos las ocurrencias y ordenamos el data frame por frecuencia para facilitar la visualización.
+
 ```{r}
 
 # Limpiar los espacios en blanco al principio y al final del texto de los enlaces
@@ -118,6 +126,8 @@ View(df_enlaces_con_frecuencia)
 ```
 
 ## 5. Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL).
+
+Iteramos sobre cada enlace para verificar su estado utilizando la función `HEAD` de la librería `httr`. Clasificamos las URLs como absolutas o relativas y realizamos las peticiones correspondientes, teniendo cuidado de pausar entre cada petición para evitar ser bloqueados por el servidor.
 
 ```{r}
 # Cargar libreria
@@ -178,6 +188,8 @@ View(df_enlaces_estado)
 Elaborad, usando las librerías de gráficos base y qplot (ggplot2), una infografía sobre los datos obtenidos. Tal infografía será una reunión de gráficos donde se muestren los siguientes detalles:
 
 ## Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
+
+Elaboramos una infografía utilizando las librerías de gráficos base y `qplot` (parte de `ggplot2`) para visualizar los datos obtenidos del web scraping. Esta infografía incluye un histograma de la frecuencia de aparición de los enlaces, un gráfico de barras que compara enlaces a otros dominios frente a enlaces internos, y un gráfico de tarta que muestra los porcentajes de los códigos de estado HTTP.
 
 ```{r}
 # Asumiendo que df_enlaces_estado contiene la columna URL y status_code
@@ -286,6 +298,8 @@ Queremos programar un script con el que podamos hacer una investigación forense
 
 ## Obtención y carga de los Datos
 
+En esta sección, nos centramos en el análisis forense de un fichero de logs de un servidor Apache. Realizamos la descompresión del fichero, la carga de los registros en un data frame y la limpieza de los datos para asegurar que estén en un formato adecuado para el análisis.
+
 ## 1. Descomprimir el fichero comprimido que contiene los registros del servidor, y a partir de los datos extraídos, cargar en data frame los registros con las peticiones servidas.
 
 ```{r dataset}
@@ -323,6 +337,8 @@ View(data)
 
 ## 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
 
+Identificamos el número único de usuarios que han interactuado con el servidor y aquellos que han experimentado errores, proporcionando una descripción detallada de los diferentes tipos de errores encontrados en la muestra de datos.
+
 ```{r}
 # Código para explorar los datos y obtener estadísticas
 usuarios_unicos <- unique(data$IP)
@@ -341,6 +357,8 @@ print(paste("Código de error:", codigos_error_unicos) )
 ## Análisis de Datos
 
 ## 5. Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.
+
+Analizamos los distintos tipos de peticiones HTTP gestionadas por el servidor y filtramos aquellas correspondientes a recursos de tipo imagen.
 
 ```{r}
 library(stringr)
@@ -369,6 +387,8 @@ View(data_freq_tipo_2)
 ## Visualización de Resultados
 
 ## 6. Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados.
+
+Generamos gráficos que permiten visualizar características relevantes de los datos analizados, incluyendo un gráfico de tarta para las peticiones HTTP y un gráfico circular para comparar peticiones de imagen con otras peticiones.
 
 ```{r}
 # Asegúrate de que la librería ggplot2 esté cargada
@@ -449,6 +469,8 @@ ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
 ## 8. Utilizando un algoritmo de aprendizaje no supervisado, realizad un análisis de clústering con k-means para los datos del servidor.
 
 ## 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
+
+Aplicamos el algoritmo de clustering k-means a los datos del servidor con distintos valores de k y visualizamos los resultados mediante gráficos de dispersión, interpretando las características de los distintos grupos formados.
 
 ```{r}
 library(dplyr)
