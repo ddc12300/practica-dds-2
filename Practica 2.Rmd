@@ -199,9 +199,10 @@ Tal infografía será una reunión de gráficos donde se muestren los siguientes
 
 ### Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
 
-Elaboramos una infografía utilizando las librerías de gráficos base y `qplot` (parte de `ggplot2`) para visualizar los datos obtenidos del web scraping. 
+Elaboramos una infografía utilizando las librerías de gráficos base y `qplot` (parte de `ggplot2`) para visualizar los datos obtenidos del web scraping.
 
-Esta infografía incluye un histograma de la frecuencia de aparición de los enlaces, un gráfico de barras que compara enlaces a otros dominios frente a enlaces internos, y un gráfico de tarta que muestra los porcentajes de los códigos de estado HTTP. Para diferenciar entre enlaces internos y externos, añadimos una columna `TipoURL` al data frame `df_enlaces_estado` que clasifica cada URL como "Absoluta" o "Relativa" basándose en si comienza con "http". 
+Esta infografía incluye un histograma de la frecuencia de aparición de los enlaces, un gráfico de barras que compara enlaces a otros dominios frente a enlaces internos, y un gráfico de tarta que muestra los porcentajes de los códigos de estado HTTP.
+Para diferenciar entre enlaces internos y externos, añadimos una columna `TipoURL` al data frame `df_enlaces_estado` que clasifica cada URL como "Absoluta" o "Relativa" basándose en si comienza con "http".
 
 ```{r}
 # Asumiendo que df_enlaces_estado contiene la columna URL y status_code
@@ -225,7 +226,9 @@ print(grafico_barras_urls)
 
 ### Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o servicios (distinto a <https://www.mediawiki.org> en el caso de ejemplo) vs. la suma de los otros enlaces.
 
-El código para este gráfico de barras comienza definiendo la función `es_dominio_base`, que verifica si una URL dada apunta al dominio base de MediaWiki o a un dominio diferente. Luego, aplicamos esta función a todas las URLs en `df_enlaces_estado` y creamos un conteo de enlaces por destino. Finalmente, visualizamos este conteo en un gráfico de barras con `ggplot2`, donde las barras se colorean según el destino y se etiquetan con el número total de enlaces para cada categoría, proporcionando una comparación clara entre enlaces internos y externos.
+El código para este gráfico de barras comienza definiendo la función `es_dominio_base`, que verifica si una URL dada apunta al dominio base de MediaWiki o a un dominio diferente.
+Luego, aplicamos esta función a todas las URLs en `df_enlaces_estado` y creamos un conteo de enlaces por destino.
+Finalmente, visualizamos este conteo en un gráfico de barras con `ggplot2`, donde las barras se colorean según el destino y se etiquetan con el número total de enlaces para cada categoría, proporcionando una comparación clara entre enlaces internos y externos.
 
 ```{r}
 # Asumiendo que df_enlaces_estado contiene la columna URL
@@ -270,7 +273,8 @@ print(grafico_barras_destinos)
 
 ### Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
 
-Para representar visualmente la distribución de los códigos de estado HTTP obtenidos durante el análisis de enlaces, hemos creado un gráfico de tarta utilizando `ggplot2`. El procedimiento comienza con la creación de un conteo de la frecuencia de cada código de estado, que luego convertimos en un data frame `df_conteo_status` para su uso.
+Para representar visualmente la distribución de los códigos de estado HTTP obtenidos durante el análisis de enlaces, hemos creado un gráfico de tarta utilizando `ggplot2`.
+El procedimiento comienza con la creación de un conteo de la frecuencia de cada código de estado, que luego convertimos en un data frame `df_conteo_status` para su uso.
 
 ```{r}
 # Cargar librerias
@@ -300,7 +304,8 @@ grafico_tarta_status <- ggplot(df_conteo_status, aes(x = "", y = count, fill = f
 print(grafico_tarta_status)
 ```
 
-Finalmente, utilizando `gridExtra`, combinamos el gráfico de tarta con los gráficos de barras anteriores en un solo gráfico compuesto para una presentación integrada de todos los hallazgos visuales. Este enfoque facilita la comparación y el análisis conjunto de las diferentes métricas visuales generadas a partir de los datos de enlaces de la página web.
+Finalmente, utilizando `gridExtra`, combinamos el gráfico de tarta con los gráficos de barras anteriores en un solo gráfico compuesto para una presentación integrada de todos los hallazgos visuales.
+Este enfoque facilita la comparación y el análisis conjunto de las diferentes métricas visuales generadas a partir de los datos de enlaces de la página web.
 
 ```{r}
 # Cargar librerias
@@ -509,7 +514,8 @@ ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
   theme_minimal()
 ```
 
-En este apartado, el código convierte las fechas y horas en la columna "Timestamp" a un formato adecuado, utilizando la libraria lubridate y luego agrupa los datos por hora, contando el número de peticiones en cada intervalo de tiempo. Finalmente, se crea el gráfico que muestra la cantidad de peticiones hechas en cada hora.
+En este apartado, el código convierte las fechas y horas en la columna "Timestamp" a un formato adecuado, utilizando la libraria lubridate y luego agrupa los datos por hora, contando el número de peticiones en cada intervalo de tiempo.
+Finalmente, se crea el gráfico que muestra la cantidad de peticiones hechas en cada hora.
 
 ## Clústering de datos
 
@@ -517,7 +523,11 @@ En este apartado, el código convierte las fechas y horas en la columna "Timesta
 
 ### 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
 
-Aplicamos el algoritmo de clustering k-means a los datos del servidor con distintos valores de k y visualizamos los resultados mediante gráficos de dispersión, interpretando las características de los distintos grupos formados.
+Para realizar un análisis de clústering de los datos del servidor web Apache, primero llevamos a cabo una serie de pasos preliminares con el objetivo de preparar los datos para el modelado. Cargamos el conjunto de datos desde un archivo CSV, asignamos nombres descriptivos a las columnas y realizamos una limpieza de datos que incluye la eliminación de comillas y la imputación de valores faltantes en la columna de 'Bytes'.
+
+Además, creamos una nueva columna numérica `resource_length` que representa la longitud de la URL servida. Para manejar las variables categóricas 'Tipo' y 'Protocolo', aplicamos la técnica de one-hot encoding, transformándolas en columnas numéricas que son adecuadas para su uso en algoritmos de aprendizaje automático que requieren entradas numéricas.
+
+Con los datos preparados, ejecutamos el algoritmo k-means para dos números diferentes de clústeres (k=2 y k=3) y agregamos las asignaciones de clúster resultantes al data frame original. Para visualizar los resultados del clústering, generamos gráficos de dispersión con `ggplot2`, utilizando la longitud de la URL y los bytes enviados como ejes, y coloreando los puntos según el clúster asignado.
 
 ```{r}
 library(dplyr)
@@ -586,3 +596,15 @@ ggplot(epa_http, aes(x = resource_length, y = Bytes, color = as.factor(cluster_k
        color = "Cluster") +
   theme_minimal()
 ```
+
+Siguiendo el análisis de clústering realizado con el algoritmo k-means y basándonos en los resultados para k=2 y k=3, hemos descubierto patrones interesantes en la distribución de nuestros datos. Los gráficos de dispersión generados muestran una agrupación predominante de puntos en la región inferior para ambos grupos de clústeres, lo cual revela que un gran número de URLs, a pesar de su corta longitud, están asociadas con una cantidad considerable de bytes enviados.
+
+Para el clúster 1, que posiblemente incluye la mayoría de los puntos, observamos que las URLs cortas podrían estar vinculadas a recursos de gran tamaño, tales como imágenes de alta resolución o archivos multimedia. Estos archivos, a pesar de ser referenciados por URLs concisas, implican una transferencia de datos más voluminosa debido a su naturaleza.
+
+El clúster 2, por otro lado, aunque también caracterizado por URLs cortas, podría estar relacionado con páginas web estáticas o documentos de texto que, en general, tienen tamaños de archivo menores y, por ende, generan menos bytes enviados.
+
+Con respecto al clúster 3, se nota una dispersión más amplia en el gráfico, lo cual puede sugerir una variedad de tipos de recursos servidos, desde páginas dinámicas y servicios interactivos hasta descargas directas, cada uno con diferentes longitudes de URL y volúmenes de datos transmitidos.
+
+La concentración de la mayoría de los puntos en áreas específicas del gráfico sugiere un patrón de comportamiento común en cómo los usuarios interactúan con el servidor o cómo los recursos están estructurados y se accede a ellos. Este patrón puede ofrecer oportunidades para optimizar la forma en que se almacenan y sirven los recursos, mejorando así la eficiencia del servidor.
+
+Cabe destacar que la presencia de puntos aislados fuera de las áreas de concentración principal puede indicar excepciones o casos atípicos que podrían requerir una investigación adicional. Por ejemplo, una URL particularmente larga que no se corresponde con un gran número de bytes enviados podría ser un indicador de una configuración ineficiente o de un posible problema en el servidor que merece una atención más detallada.
