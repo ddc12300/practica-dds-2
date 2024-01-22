@@ -366,7 +366,7 @@ codigos_error_unicos <- unique(data$Respuesta[data$Respuesta >= 400 & data$Respu
 print(paste("Código de error:", codigos_error_unicos) )
 ```
 
-En el apartado de exploración de datos hemos usado la función unique() para ver cuantos usuarios unicos hay en el fichero. A continuación, hemos obtenido el número de usuarios con error en alguna petición asumiendo que cualquier respuesta HTTP con un valor entre 400 y 599 se considera un error. Finalmente, hemos obtenido el número de usuarios sin error haciendo la diferencia entre el total y los que tienen error y hemos obtenido los códigos de error que podemos encontrar en el fichero
+En el apartado de exploración de datos hemos usado la función unique() para ver cuantos usuarios unicos hay en el fichero. A continuación, hemos obtenido el número de usuarios con error en alguna petición asumiendo que cualquier respuesta HTTP con un valor entre 400 y 599 se considera un error. Finalmente, hemos obtenido el número de usuarios sin error haciendo la diferencia entre el total y los que tienen error y hemos extraído los códigos de error que podemos encontrar en el fichero.
 
 ## Análisis de Datos
 
