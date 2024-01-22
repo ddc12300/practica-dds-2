@@ -426,6 +426,9 @@ grafico_tarta_tipo <- ggplot(data_freq_tipo, aes(x = "", y = Frecuencia, fill = 
 print(grafico_tarta_tipo)
 ```
 
+En este primer apartado, hemos generado un gráfico tipo tarta que separa las peticiones por tipo de petición mostrando en que porcentaje se usa cada una en el conjunto de datos
+
+
 ```{r}
 # Asegúrate de que la librería ggplot2 esté cargada
 library(ggplot2)
@@ -451,6 +454,8 @@ pie(valores, labels = paste(categorias, "\n", porcentajes, "%"), col = c("red", 
 legend("topright", legend = categorias, fill = c("red", "blue"))
 
 ```
+
+En este segundo apartado hemos mostrado en un gráfico circular el porcentaje de peticiones que son de imagen, en relación al número de peticiones total
 
 ## 7. Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.
 
