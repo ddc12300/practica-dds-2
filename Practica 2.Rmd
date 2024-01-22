@@ -393,11 +393,38 @@ legend("topright", legend = categorias, fill = c("red", "blue"))
 
 ```
 
+```{r}
+# Asegúrate de que las librerías necesarias estén cargadas
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+# Ajustar la conversión de la columna Timestamp al formato correcto
+# Asumiendo que el formato de la fecha es "YYYY-MM-DD HH:MM:SS"
+data$Timestamp <- ymd_hms(data$Timestamp)
+
+# Agrupar los datos por intervalos de tiempo (por ejemplo, por hora)
+# y contar el número de peticiones en cada intervalo
+data_agrupada <- data %>%
+  mutate(Hour = floor_date(Timestamp, "hour")) %>%
+  group_by(Hour) %>%
+  summarise(NumeroPeticiones = n())
+
+# Crear un gráfico de líneas para visualizar el número de peticiones a lo largo del tiempo
+ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
+  geom_line() +
+  labs(title = "Número de peticiones servidas a lo largo del tiempo",
+       x = "Hora",
+       y = "Número de Peticiones") +
+  theme_minimal()
+```
+
 ## Clústering de datos
 
 ```{r}
-# Código para realizar el análisis de clústering con k-means
+
 ```
+
 
 ## Representación visual de clústering
 
