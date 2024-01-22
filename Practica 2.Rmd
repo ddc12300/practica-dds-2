@@ -10,11 +10,17 @@ output:
 
 # Introducción
 
-Breve descripción de la actividad y los objetivos a alcanzar.
+En este informe, abordaremos la práctica de Data Driven Security dentro del módulo de CyberSecurity Management, específicamente en la asignatura de Data Driven Security. El objetivo principal de esta práctica es aplicar técnicas de web scraping, análisis de datos y visualización, así como el manejo de logs de servidor y clustering de datos utilizando el lenguaje de programación R.
 
-# Pregunta 1: Datos Elegantes + Análisis de Datos con Web Scrapping
+Para ello, desarrollaremos un programa capaz de extraer información de una página web mediante técnicas de web scraping, analizar los datos obtenidos, y posteriormente, gestionar y analizar logs de un servidor Apache. Además, aplicaremos técnicas de clustering para identificar patrones en los datos del servidor.
 
-## 1. Descargar y almacenar la página web
+A continuación, presentamos el código desarrollado para cada una de las tareas, junto con una explicación detallada de los pasos seguidos y las decisiones tomadas.
+
+# 1. Datos Elegantes + Análisis de Datos con Web Scrapping
+
+Queremos programar un programa de tipo web scrapping con el que podamos obtener una página web, mediante su URL, y poder analizar su contenido HTML con tal de extraer datos e información específica. Nuestro programa ha de ser capaz de cumplir con los siguientes pasos:
+
+## 1. Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
 
 ```{r}
 # Cargar las librerías necesarias
@@ -40,10 +46,10 @@ if (status_code(pagina_web) == 200) {
 }
 ```
 
-## 2. Analizar el título de la página
+## 2. Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
 
 ```{r}
-# Asegúrate de que las librerías necesarias estén cargadas
+# Cargar librerias
 library(XML)
 
 # Utilizar XPath para encontrar el título de la página
@@ -53,10 +59,10 @@ titulo <- xpathSApply(contenido_xml, "//title", xmlValue)
 print(titulo)
 ```
 
-## 3. Buscar todos los enlaces
+## 3. Analizar el contenido de la web, buscando todos los enlaces (que en HTML se etiquetan como “a”), buscando el texto del enlace, así como la URL.
 
 ```{r}
-# Asegúrate de que las librerías necesarias estén cargadas
+# Cargar librerias
 library(XML)
 
 # Leer el contenido XML desde el archivo si no está ya cargado en la sesión
@@ -90,7 +96,7 @@ df_enlaces <- data.frame(Texto = links_text, URL = links_href, stringsAsFactors 
 View(df_enlaces)
 ```
 
-## 4. Generar tabla de enlaces
+## 4. Generar una tabla con cada enlace encontrado, indicando el texto que acompaña el enlace, y el número de veces que aparece un enlace con ese mismo objetivo.
 
 ```{r}
 
@@ -111,10 +117,10 @@ df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[order(-df_enlaces_con_fre
 View(df_enlaces_con_frecuencia)
 ```
 
-## 5. Verificar si los enlaces están activos
+## 5. Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL).
 
 ```{r}
-# Asegúrate de que la librería httr esté cargada
+# Cargar libreria
 library(httr)
 
 # Asumiendo que ya tienes el data frame df_enlaces con las columnas Texto y URL
@@ -169,7 +175,9 @@ View(df_enlaces_estado)
 
 # Pregunta 2: Infografía con gráficos
 
-## Histograma de frecuencia de enlaces
+Elaborad, usando las librerías de gráficos base y qplot (ggplot2), una infografía sobre los datos obtenidos. Tal infografía será una reunión de gráficos donde se muestren los siguientes detalles:
+
+## Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
 
 ```{r}
 # Asumiendo que df_enlaces_estado contiene la columna URL y status_code
@@ -191,7 +199,7 @@ grafico_barras_urls <- ggplot(df_enlaces_estado, aes(x = TipoURL, fill = TipoURL
 print(grafico_barras_urls)
 ```
 
-## Gráfico de barras de enlaces a otros dominios
+## Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o servicios (distinto a https://www.mediawiki.org en el caso de ejemplo) vs. la suma de los otros enlaces.
 
 ```{r}
 # Asumiendo que df_enlaces_estado contiene la columna URL
@@ -234,10 +242,10 @@ grafico_barras_destinos <- ggplot(df_conteo_destinos, aes(x = Var1, y = Freq, fi
 print(grafico_barras_destinos)
 ```
 
-## Gráfico de tarta de Status HTTP
+## Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
 
 ```{r}
-# Asegúrate de que la librería ggplot2 esté cargada
+# Cargar librerias
 library(ggplot2)
 
 # Contar la frecuencia de cada código de estado
@@ -265,17 +273,20 @@ print(grafico_tarta_status)
 ```
 
 ```{r}
-# Cargar la librería necesaria para organizar los gráficos
+# Cargar librerias
 library(gridExtra)
 
 # Combinar los gráficos en una sola figura
 grid.arrange(grafico_barras_urls, grafico_barras_destinos, grafico_tarta_status, ncol = 2)
 ```
 
-# Pregunta 3: Análisis de logs de servidor usando R (parte II)
+# 2: Análisis de logs de servidor usando R (parte II)
+
+Queremos programar un script con el que podamos hacer una investigación forense sobre un fichero de logs de un servidor de tipo Apache. Los datos del registro del servidor están en el formato estándar e incluyen miles de registros sobre las distintas peticiones gestionadas por el servidor web. Nuestro programa ha de ser capaz de obtener las respuestas de forma dinámica a las siguientes preguntas utilizando instrucciones de código en R:
 
 ## Obtención y carga de los Datos
 
+## 1. Descomprimir el fichero comprimido que contiene los registros del servidor, y a partir de los datos extraídos, cargar en data frame los registros con las peticiones servidas.
 
 ```{r dataset}
 library(readr)
@@ -284,7 +295,13 @@ colnames(data) <- c("IP", "Timestamp", "Tipo", "URL", "Protocolo", "Respuesta", 
 View(data)
 ```
 
+## 2. Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.
+
+
+
 ## Limpieza de los Datos
+
+## 3. Aprovechando que los datos a analizar son los mismos de la primera práctica, para esta entrega es imprescindible que los datos estén en formato de “datos elegantes”.
 
 ```{r}
 # Código para limpiar y preparar los datos
@@ -304,6 +321,8 @@ View(data)
 
 ## Exploración de Datos
 
+## 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
+
 ```{r}
 # Código para explorar los datos y obtener estadísticas
 usuarios_unicos <- unique(data$IP)
@@ -320,6 +339,8 @@ print(paste("Código de error:", codigos_error_unicos) )
 ```
 
 ## Análisis de Datos
+
+## 5. Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.
 
 ```{r}
 library(stringr)
@@ -346,6 +367,8 @@ View(data_freq_tipo_2)
 ```
 
 ## Visualización de Resultados
+
+## 6. Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados.
 
 ```{r}
 # Asegúrate de que la librería ggplot2 esté cargada
@@ -393,6 +416,8 @@ legend("topright", legend = categorias, fill = c("red", "blue"))
 
 ```
 
+## 7. Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.
+
 ```{r}
 # Asegúrate de que las librerías necesarias estén cargadas
 library(ggplot2)
@@ -420,6 +445,10 @@ ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
 ```
 
 ## Clústering de datos
+
+## 8. Utilizando un algoritmo de aprendizaje no supervisado, realizad un análisis de clústering con k-means para los datos del servidor.
+
+## 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
 
 ```{r}
 library(dplyr)
