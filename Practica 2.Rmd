@@ -26,7 +26,7 @@ A continuación, presentamos el código desarrollado para cada una de las tareas
 Queremos programar un programa de tipo web scrapping con el que podamos obtener una página web, mediante su URL, y poder analizar su contenido HTML con tal de extraer datos e información específica.
 Nuestro programa ha de ser capaz de cumplir con los siguientes pasos:
 
-### 1. Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
+#### 1. Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
 
 Aquí, utilizamos las librerías `httr` y `XML` para descargar el contenido de la página web de MediaWiki y convertirlo en un formato XML que podamos analizar en R.
 Verificamos que la descarga sea exitosa mediante el código de estado HTTP.
@@ -55,7 +55,7 @@ if (status_code(pagina_web) == 200) {
 }
 ```
 
-### 2. Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
+#### 2. Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
 
 Mediante el uso de XPath, extraemos el título de la página web y lo imprimimos para confirmar que se ha obtenido correctamente.
 
@@ -70,7 +70,7 @@ titulo <- xpathSApply(contenido_xml, "//title", xmlValue)
 print(titulo)
 ```
 
-### 3. Analizar el contenido de la web, buscando todos los enlaces (que en HTML se etiquetan como “a”), buscando el texto del enlace, así como la URL.
+#### 3. Analizar el contenido de la web, buscando todos los enlaces (que en HTML se etiquetan como “a”), buscando el texto del enlace, así como la URL.
 
 Utilizamos nuevamente XPath para extraer todos los enlaces de la página, incluyendo el texto y la URL de cada uno.
 Luego, limpiamos y reemplazamos los valores nulos o cadenas vacías con `NA` y creamos un data frame con esta información.
@@ -110,7 +110,7 @@ df_enlaces <- data.frame(Texto = links_text, URL = links_href, stringsAsFactors 
 View(df_enlaces)
 ```
 
-### 4. Generar una tabla con cada enlace encontrado, indicando el texto que acompaña el enlace, y el número de veces que aparece un enlace con ese mismo objetivo.
+#### 4. Generar una tabla con cada enlace encontrado, indicando el texto que acompaña el enlace, y el número de veces que aparece un enlace con ese mismo objetivo.
 
 Agrupamos los enlaces por texto y URL, contamos las ocurrencias y ordenamos el data frame por frecuencia para facilitar la visualización.
 
@@ -133,7 +133,7 @@ df_enlaces_con_frecuencia <- df_enlaces_con_frecuencia[order(-df_enlaces_con_fre
 View(df_enlaces_con_frecuencia)
 ```
 
-### 5. Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL).
+#### 5. Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL).
 
 Iteramos sobre cada enlace para verificar su estado utilizando la función `HEAD` de la librería `httr`.
 Clasificamos las URLs como absolutas o relativas y realizamos las peticiones correspondientes, teniendo cuidado de pausar entre cada petición para evitar ser bloqueados por el servidor.
@@ -197,7 +197,7 @@ View(df_enlaces_estado)
 Elaborad, usando las librerías de gráficos base y qplot (ggplot2), una infografía sobre los datos obtenidos.
 Tal infografía será una reunión de gráficos donde se muestren los siguientes detalles:
 
-### Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
+#### Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
 
 Elaboramos una infografía utilizando las librerías de gráficos base y `qplot` (parte de `ggplot2`) para visualizar los datos obtenidos del web scraping.
 
@@ -223,7 +223,7 @@ grafico_barras_urls <- ggplot(df_enlaces_estado, aes(x = TipoURL, fill = TipoURL
 print(grafico_barras_urls)
 ```
 
-### Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o servicios (distinto a <https://www.mediawiki.org> en el caso de ejemplo) vs. la suma de los otros enlaces.
+#### Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o servicios (distinto a <https://www.mediawiki.org> en el caso de ejemplo) vs. la suma de los otros enlaces.
 
 El código para este gráfico de barras comienza definiendo la función `es_dominio_base`, que verifica si una URL dada apunta al dominio base de MediaWiki o a un dominio diferente.
 Luego, aplicamos esta función a todas las URLs en `df_enlaces_estado` y creamos un conteo de enlaces por destino.
@@ -269,7 +269,7 @@ grafico_barras_destinos <- ggplot(df_conteo_destinos, aes(x = Var1, y = Freq, fi
 print(grafico_barras_destinos)
 ```
 
-### Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
+#### Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
 
 Para representar visualmente la distribución de los códigos de estado HTTP obtenidos durante el análisis de enlaces, hemos creado un gráfico de tarta utilizando `ggplot2`.
 El procedimiento comienza con la creación de un conteo de la frecuencia de cada código de estado, que luego convertimos en un data frame `df_conteo_status` para su uso.
@@ -319,12 +319,12 @@ Queremos programar un script con el que podamos hacer una investigación forense
 Los datos del registro del servidor están en el formato estándar e incluyen miles de registros sobre las distintas peticiones gestionadas por el servidor web.
 Nuestro programa ha de ser capaz de obtener las respuestas de forma dinámica a las siguientes preguntas utilizando instrucciones de código en R:
 
-## Obtención y carga de los Datos
+### Obtención y carga de los Datos
 
 En esta sección, nos centramos en el análisis forense de un fichero de logs de un servidor Apache.
 Realizamos la descompresión del fichero, la carga de los registros en un data frame y la limpieza de los datos para asegurar que estén en un formato adecuado para el análisis.
 
-### 1. Descomprimir el fichero comprimido que contiene los registros del servidor, y a partir de los datos extraídos, cargar en data frame los registros con las peticiones servidas.
+#### 1. Descomprimir el fichero comprimido que contiene los registros del servidor, y a partir de los datos extraídos, cargar en data frame los registros con las peticiones servidas.
 
 ```{r dataset}
 library(readr)
@@ -336,7 +336,7 @@ View(data)
 En este primer apartado hemos decomprimido el fichero epa-http.csv con la función read_table de la libreria readr.
 A continuación, hemos añadido el nombre de cada columna, en este caso: "IP", "Timestamp", "Tipo", "URL", "Protocolo", "Respuesta" y "Bytes".
 
-### 2. Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.
+#### 2. Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.
 
 Al descomprimir el fichero y definirlo como un dataframe, podemos observar que tipo de dato tenemos en cada columna.
 La primera columna se trata de de las IPs que hacen la petición al servidor, se trata de una variable de tipo "character".
@@ -345,9 +345,9 @@ La tercera columna contiene el tipo de petición que hace al servidor, también 
 La sexta columna contiene la respuesta de la petición HTTP, es de tipo "numeric" y vemos que los códigos de respuesta HTTP que podemos encontrar en el fichero son: 200 302 304 404 403 501 500 y 400.
 Finalmente, la séptima columna contine la cantidad de Bytes enviados y es de tipo "character" porque contiene valores NA.
 
-## Limpieza de los Datos
+### Limpieza de los Datos
 
-### 3. Aprovechando que los datos a analizar son los mismos de la primera práctica, para esta entrega es imprescindible que los datos estén en formato de “datos elegantes”.
+#### 3. Aprovechando que los datos a analizar son los mismos de la primera práctica, para esta entrega es imprescindible que los datos estén en formato de “datos elegantes”.
 
 ```{r}
 # Código para limpiar y preparar los datos
@@ -370,9 +370,9 @@ En la columna de Timestamp hemos eliminado lo "[" y "]" para poder obtener el va
 En la columna Tipo hemos eliminado las " del inicio del valor. En la columna URL hemos usado la misma función que en la columna IP para limpiar cualquier espacio que haya al inicio o final de la petición. EN la columna Protocolo hemos eliminado las " que habia al final de todos los valores de la variable.
 Las columnas Respuesta y Bytes las hemos definido como columnas de variables tipo "numeric"
 
-## Exploración de Datos
+### Exploración de Datos
 
-### 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
+#### 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
 
 Identificamos el número único de usuarios que han interactuado con el servidor y aquellos que han experimentado errores, proporcionando una descripción de los diferentes tipos de errores encontrados en la muestra de datos.
 
@@ -395,9 +395,9 @@ En el apartado de exploración de datos hemos usado la función unique() para ve
 A continuación, hemos obtenido el número de usuarios con error en alguna petición asumiendo que cualquier respuesta HTTP con un valor entre 400 y 599 se considera un error.
 Finalmente, hemos obtenido el número de usuarios sin error haciendo la diferencia entre el total y los que tienen error y hemos extraído los códigos de error que podemos encontrar en el fichero.
 
-## Análisis de Datos
+### Análisis de Datos
 
-### 5. Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.
+#### 5. Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.
 
 Analizamos los distintos tipos de peticiones HTTP gestionadas por el servidor y filtramos aquellas correspondientes a recursos de tipo imagen.
 
@@ -428,9 +428,9 @@ View(data_freq_tipo_2)
 En este apartado, primero hemos realizado la clasificación de la peticiones al servidor en función del tipo de petición que realiza y hemos generado el dataframe "data_freq_tipo".
 A continuación, observando los datos hemos visto que podiamos encontrar tres tipos de formato de imagen: .gif, .jpg y .xbm, por lo tanto, hemos filtrado solo las URL que acababan con dichos formatos y hemos generado un data frame similar al anterior clasificando las peticiones por tipo.
 
-## Visualización de Resultados
+### Visualización de Resultados
 
-### 6. Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados.
+#### 6. Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados.
 
 Generamos gráficos que permiten visualizar características relevantes de los datos analizados, incluyendo un gráfico de tarta para las peticiones HTTP y un gráfico circular para comparar peticiones de imagen con otras peticiones.
 
@@ -482,7 +482,7 @@ legend("topright", legend = categorias, fill = c("red", "blue"))
 
 En este segundo apartado hemos mostrado en un gráfico circular el porcentaje de peticiones que son de imagen, en relación al número de peticiones total
 
-### 7. Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.
+#### 7. Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.
 
 ```{r}
 library(ggplot2)
@@ -512,11 +512,11 @@ ggplot(data_agrupada, aes(x = Hour, y = NumeroPeticiones)) +
 En este apartado, el código convierte las fechas y horas en la columna "Timestamp" a un formato adecuado, utilizando la libraria lubridate y luego agrupa los datos por hora, contando el número de peticiones en cada intervalo de tiempo.
 Finalmente, se crea el gráfico que muestra la cantidad de peticiones hechas en cada hora.
 
-## Clústering de datos
+### Clústering de datos
 
-### 8. Utilizando un algoritmo de aprendizaje no supervisado, realizad un análisis de clústering con k-means para los datos del servidor.
+#### 8. Utilizando un algoritmo de aprendizaje no supervisado, realizad un análisis de clústering con k-means para los datos del servidor.
 
-### 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
+#### 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
 
 Para realizar un análisis de clústering de los datos del servidor web Apache, primero llevamos a cabo una serie de pasos preliminares con el objetivo de preparar los datos para el modelado.
 
