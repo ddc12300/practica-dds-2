@@ -309,9 +309,13 @@ colnames(data) <- c("IP", "Timestamp", "Tipo", "URL", "Protocolo", "Respuesta", 
 View(data)
 ```
 
+En este primer apartado hemos decomprimido el fichero epa-http.csv con la función read_table de la libreria readr. A continuación, hemos añadido el nombre de cada columna, en este caso: "IP", "Timestamp", "Tipo", "URL", "Protocolo", "Respuesta" y "Bytes".
+
 ## 2. Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.
 
-
+Al descomprimir el fichero y definirlo como un dataframe, podemos observar que tipo de dato tenemos en cada columna. La primera columna se trata de de las IPs que hacen la petición al servidor, se trata de una variable de tipo "character". La segunda columna contiene la fecha y la hora a la que se ha realizado la petición en formato [dia:hora:minuto:segundo] y también es de tipo "character". La tercera columna contiene el tipo de petición que hace al servidor, también es tipo "character" y haciendo un unique(data$Tipo) vemos que esta variable solo puede tener tres valores: GET, POST o HEAD.
+La cuarta columna, contiene la URL de la petición, también es de tipo "character".
+La quinta columna nos muestra el protocolo HTTP utilizado para hacer la petición, como el resto de columnas es de tipo "character" y a partir de la función unique(data$Protocolo) vemos que la variable solo puede tener dos valores: HTTP/1.0 o HTTP/0.2. La sexta columna contiene la respuesta de la petición HTTP, es de tipo "numeric" y vemos que los códigos de respuesta HTTP que podemos encontrar en el fichero son: 200 302 304 404 403 501 500 y 400. Finalmente, la séptima columna contine la cantidad de Bytes enviados y es de tipo "character" porque contiene valores NA.
 
 ## Limpieza de los Datos
 
@@ -333,6 +337,14 @@ data$Bytes <- as.numeric(data$Bytes)
 View(data)
 ```
 
+Para limpiar y preparar los datos para su posterior análisi hemos decidido realizar el siguiente procedimiento:
+En el caso de la columna IP hemos utilizado la función trimws() para eliminar cualquier espacio que haya al principio o al final del valor de la IP.
+En la columna de Timestamp hemos eliminado lo "[" y "]" para poder obtener el valor en formato dia:hora:minuto:segundo y a partir de ese valor usar la función as.POSIXct() para obtener el valor de la fecha y hora en la que se ejecutó la petición.
+En la columna Tipo hemos eliminado las " del inicio del valor.
+En la columna URL hemos usado la misma función que en la columna IP para limpiar cualquier espacio que haya al inicio o final de la petición.
+EN la columna Protocolo hemos eliminado las " que habia al final de todos los valores de la variable.
+Las columnas Respuesta y Bytes las hemos definido como columnas de variables tipo "numeric"
+
 ## Exploración de Datos
 
 ## 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
@@ -353,6 +365,8 @@ print(paste("Número de usuarios únicos sin error:", length(usuarios_sin_error)
 codigos_error_unicos <- unique(data$Respuesta[data$Respuesta >= 400 & data$Respuesta <= 599])
 print(paste("Código de error:", codigos_error_unicos) )
 ```
+
+En el apartado de exploración de datos hemos usado la función unique() para ver cuantos usuarios unicos hay en el fichero. A continuación, hemos obtenido el número de usuarios con error en alguna petición asumiendo que cualquier respuesta HTTP con un valor entre 400 y 599 se considera un error. Finalmente, hemos obtenido el número de usuarios sin error haciendo la diferencia entre el total y los que tienen error y hemos obtenido los códigos de error que podemos encontrar en el fichero
 
 ## Análisis de Datos
 
