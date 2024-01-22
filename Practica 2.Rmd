@@ -349,7 +349,7 @@ Las columnas Respuesta y Bytes las hemos definido como columnas de variables tip
 
 ## 4. Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
 
-Identificamos el número único de usuarios que han interactuado con el servidor y aquellos que han experimentado errores, proporcionando una descripción detallada de los diferentes tipos de errores encontrados en la muestra de datos.
+Identificamos el número único de usuarios que han interactuado con el servidor y aquellos que han experimentado errores, proporcionando una descripción de los diferentes tipos de errores encontrados en la muestra de datos.
 
 ```{r}
 # Código para explorar los datos y obtener estadísticas
