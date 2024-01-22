@@ -1,6 +1,6 @@
 ---
 title: "Actividad Evaluable 2: Data Driven Security – CyberSecurity Management"
-author: "Tu Nombre y el de tu compañero/a"
+author: "Daniel Díaz y Raquel Abad"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -523,11 +523,14 @@ Finalmente, se crea el gráfico que muestra la cantidad de peticiones hechas en 
 
 ### 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
 
-Para realizar un análisis de clústering de los datos del servidor web Apache, primero llevamos a cabo una serie de pasos preliminares con el objetivo de preparar los datos para el modelado. Cargamos el conjunto de datos desde un archivo CSV, asignamos nombres descriptivos a las columnas y realizamos una limpieza de datos que incluye la eliminación de comillas y la imputación de valores faltantes en la columna de 'Bytes'.
+Para realizar un análisis de clústering de los datos del servidor web Apache, primero llevamos a cabo una serie de pasos preliminares con el objetivo de preparar los datos para el modelado.
+Cargamos el conjunto de datos desde un archivo CSV, asignamos nombres descriptivos a las columnas y realizamos una limpieza de datos que incluye la eliminación de comillas y la imputación de valores faltantes en la columna de 'Bytes'.
 
-Además, creamos una nueva columna numérica `resource_length` que representa la longitud de la URL servida. Para manejar las variables categóricas 'Tipo' y 'Protocolo', aplicamos la técnica de one-hot encoding, transformándolas en columnas numéricas que son adecuadas para su uso en algoritmos de aprendizaje automático que requieren entradas numéricas.
+Además, creamos una nueva columna numérica `resource_length` que representa la longitud de la URL servida.
+Para manejar las variables categóricas 'Tipo' y 'Protocolo', aplicamos la técnica de one-hot encoding, transformándolas en columnas numéricas que son adecuadas para su uso en algoritmos de aprendizaje automático que requieren entradas numéricas.
 
-Con los datos preparados, ejecutamos el algoritmo k-means para dos números diferentes de clústeres (k=2 y k=3) y agregamos las asignaciones de clúster resultantes al data frame original. Para visualizar los resultados del clústering, generamos gráficos de dispersión con `ggplot2`, utilizando la longitud de la URL y los bytes enviados como ejes, y coloreando los puntos según el clúster asignado.
+Con los datos preparados, ejecutamos el algoritmo k-means para dos números diferentes de clústeres (k=2 y k=3) y agregamos las asignaciones de clúster resultantes al data frame original.
+Para visualizar los resultados del clústering, generamos gráficos de dispersión con `ggplot2`, utilizando la longitud de la URL y los bytes enviados como ejes, y coloreando los puntos según el clúster asignado.
 
 ```{r}
 library(dplyr)
@@ -597,14 +600,18 @@ ggplot(epa_http, aes(x = resource_length, y = Bytes, color = as.factor(cluster_k
   theme_minimal()
 ```
 
-Siguiendo el análisis de clústering realizado con el algoritmo k-means y basándonos en los resultados para k=2 y k=3, hemos descubierto patrones interesantes en la distribución de nuestros datos. Los gráficos de dispersión generados muestran una agrupación predominante de puntos en la región inferior para ambos grupos de clústeres, lo cual revela que un gran número de URLs, a pesar de su corta longitud, están asociadas con una cantidad considerable de bytes enviados.
+Siguiendo el análisis de clústering realizado con el algoritmo k-means y basándonos en los resultados para k=2 y k=3, hemos descubierto patrones interesantes en la distribución de nuestros datos.
+Los gráficos de dispersión generados muestran una agrupación predominante de puntos en la región inferior para ambos grupos de clústeres, lo cual revela que un gran número de URLs, a pesar de su corta longitud, están asociadas con una cantidad considerable de bytes enviados.
 
-Para el clúster 1, que posiblemente incluye la mayoría de los puntos, observamos que las URLs cortas podrían estar vinculadas a recursos de gran tamaño, tales como imágenes de alta resolución o archivos multimedia. Estos archivos, a pesar de ser referenciados por URLs concisas, implican una transferencia de datos más voluminosa debido a su naturaleza.
+Para el clúster 1, que posiblemente incluye la mayoría de los puntos, observamos que las URLs cortas podrían estar vinculadas a recursos de gran tamaño, tales como imágenes de alta resolución o archivos multimedia.
+Estos archivos, a pesar de ser referenciados por URLs concisas, implican una transferencia de datos más voluminosa debido a su naturaleza.
 
 El clúster 2, por otro lado, aunque también caracterizado por URLs cortas, podría estar relacionado con páginas web estáticas o documentos de texto que, en general, tienen tamaños de archivo menores y, por ende, generan menos bytes enviados.
 
 Con respecto al clúster 3, se nota una dispersión más amplia en el gráfico, lo cual puede sugerir una variedad de tipos de recursos servidos, desde páginas dinámicas y servicios interactivos hasta descargas directas, cada uno con diferentes longitudes de URL y volúmenes de datos transmitidos.
 
-La concentración de la mayoría de los puntos en áreas específicas del gráfico sugiere un patrón de comportamiento común en cómo los usuarios interactúan con el servidor o cómo los recursos están estructurados y se accede a ellos. Este patrón puede ofrecer oportunidades para optimizar la forma en que se almacenan y sirven los recursos, mejorando así la eficiencia del servidor.
+La concentración de la mayoría de los puntos en áreas específicas del gráfico sugiere un patrón de comportamiento común en cómo los usuarios interactúan con el servidor o cómo los recursos están estructurados y se accede a ellos.
+Este patrón puede ofrecer oportunidades para optimizar la forma en que se almacenan y sirven los recursos, mejorando así la eficiencia del servidor.
 
-Cabe destacar que la presencia de puntos aislados fuera de las áreas de concentración principal puede indicar excepciones o casos atípicos que podrían requerir una investigación adicional. Por ejemplo, una URL particularmente larga que no se corresponde con un gran número de bytes enviados podría ser un indicador de una configuración ineficiente o de un posible problema en el servidor que merece una atención más detallada.
+Cabe destacar que la presencia de puntos aislados fuera de las áreas de concentración principal puede indicar excepciones o casos atípicos que podrían requerir una investigación adicional.
+Por ejemplo, una URL particularmente larga que no se corresponde con un gran número de bytes enviados podría ser un indicador de una configuración ineficiente o de un posible problema en el servidor que merece una atención más detallada.
