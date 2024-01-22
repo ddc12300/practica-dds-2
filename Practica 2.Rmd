@@ -524,11 +524,8 @@ Finalmente, se crea el gráfico que muestra la cantidad de peticiones hechas en 
 ### 9. Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.
 
 Para realizar un análisis de clústering de los datos del servidor web Apache, primero llevamos a cabo una serie de pasos preliminares con el objetivo de preparar los datos para el modelado.
-<<<<<<< HEAD
+
 Cargamos el conjunto de datos desde un archivo CSV, asignamos nombres descriptivos a las columnas y realizamos una limpieza de datos que incluye la eliminación de comillas y la asignación de 0 a los valores faltantes en la columna de 'Bytes'.
-=======
-Cargamos el conjunto de datos desde un archivo CSV, asignamos nombres descriptivos a las columnas y realizamos una limpieza de datos que incluye la eliminación de comillas y la imputación de valores faltantes en la columna de 'Bytes'.
->>>>>>> 5f088a941c2eb0dcf921f0068045ba59d22e4a3f
 
 Además, creamos una nueva columna numérica `resource_length` que representa la longitud de la URL servida.
 Para manejar las variables categóricas 'Tipo' y 'Protocolo', aplicamos la técnica de one-hot encoding, transformándolas en columnas numéricas que son adecuadas para su uso en algoritmos de aprendizaje automático que requieren entradas numéricas.
